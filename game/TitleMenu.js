@@ -19,11 +19,12 @@ OgrePrototype.TitleMenu.prototype = {
         this.music.play();
         
         this.game.world.setBounds(0, 0, 1024, 768);
-            
-        this.background = this.add.image(this.world.centerX, this.world.centerY, 'valkyrie-title');
-        bgwscale = 1 / (this.background.width / this.world.width);
-        bghscale = 1 / (this.background.height / this.world.height);
-        this.background.scale.setTo(bgwscale, bghscale);
+          
+        this.background = this.add.image(this.world.centerX, this.world.centerY, 'main-title-bg');
+        //this.background = this.add.image(this.world.centerX, this.world.centerY, 'valkyrie-title');
+        //bgwscale = 1 / (this.background.width / this.world.width);
+        //bghscale = 1 / (this.background.height / this.world.height);
+        //this.background.scale.setTo(bgwscale, bghscale);
         this.background.anchor.setTo(0.5, 0.5);
         
         this.TitleScreen = this.add.group();

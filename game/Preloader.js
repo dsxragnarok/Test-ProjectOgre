@@ -24,13 +24,18 @@ OgrePrototype.Preloader.prototype = {
         this.load.image('castle', '/tests/assets/CastleRed.png');
         
         this.load.spritesheet('icons-units', '/tests/assets/ogre-battle-unit-icons.png', 20, 20);
-        
+        this.load.spritesheet('arthur-victor', '/tests/assets/arthur-victorious.png', 56, 124);
+        this.load.spritesheet('classes-standing', '/tests/assets/classes-stand.png', 56, 80);
         
         this.load.spritesheet('down-arrow', '/tests/assets/arrows.png', 23, 45);
         this.load.spritesheet('exclamations', '/tests/assets/6494.png', 71, 39);
         
         this.load.image('main-title', '/tests/assets/pogre-title.png', 659, 130);
         this.load.image('sub-title', '/tests/assets/phaser-subtitle.png', 325, 45);
+        
+        this.load.image('main-title-bg', '/tests/assets/title-bg.png', 1024, 768);
+        this.load.image('end-title-bg', '/tests/assets/title2-bg.png', 1024, 768);
+        
         this.load.image('valkyrie-title', '/tests/assets/valkyrie00.jpg', 640, 782);
         this.load.image('valkyrie-defeat', '/tests/assets/valkyrie01.jpg', 1024, 768);
         this.load.image('castle-victory', '/tests/assets/unconquered.jpg', 1280, 805);
