@@ -16,7 +16,6 @@ OgrePrototype.Game = function (game) {
     
     this.foeParties;
     this.playerParties;
-    //this.allyParties;
     this.neutralParties;
     
     this.playerPartySelected;
@@ -49,12 +48,12 @@ OgrePrototype.Game.prototype = {
         this.map = this.game.add.tilemap('map');
         this.map.addTilesetImage('pogre-sample-tileset', 'tiles');
         this.layer_terrain = this.map.createLayer('terrain');
-        this.layer_locations = this.map.createLayer('locations');
+        //this.layer_locations = this.map.createLayer('locations');
         
         this.cursors = this.game.input.keyboard.createCursorKeys();
         
         this.layer_terrain.resizeWorld();
-        this.layer_locations.resizeWorld();
+        //this.layer_locations.resizeWorld();
         
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -67,8 +66,15 @@ OgrePrototype.Game.prototype = {
         this.neutralParties.enableBody = true;
         this.playerParties.enableBody = true;
         
+        this.map.createFromObjects('Object Layer 1', 15, 'castle', 0, true, false, this.castleGroup, OgrePrototype.Castle);
         /* test creating castle sprites */
-        this.map.forEach(this.maybeCreateCastle, this, 0, 0, this.map.width, this.map.height, 'locations');
+        //this.map.forEach(this.maybeCreateCastle, this, 0, 0, this.map.width, this.map.height, 'locations');
+        this.castleGroup.forEach(function (castle) {
+            castle.setProperties({});
+            castle.events.onCastleSelected.add(this.handleCastleSelect, this);
+        }, this);
+        
+        
         this.givePlayerCastle();
         this.spawnParties();
         
@@ -188,7 +194,7 @@ OgrePrototype.Game.prototype = {
     
         this.map.destroy();
         this.layer_terrain.destroy();
-        this.layer_locations.destroy();
+        //this.layer_locations.destroy();
         this.cursors = null;
         this.selectedIndicator.destroy();
         
@@ -232,8 +238,8 @@ OgrePrototype.Game.prototype = {
         
         // game, x, y, faction, icon
         party = new OgrePrototype.Party(this.game, 
-                    castle.x + 16,
-                    castle.y + 16,
+                    castle.x + castle.width/2,
+                    castle.y + castle.height/2,
                     castle.properties.faction,
                     this.game.rnd.integerInRange(0, OgrePrototype.jobs.length-1)
                 );

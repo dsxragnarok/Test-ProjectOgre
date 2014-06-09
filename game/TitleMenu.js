@@ -2,6 +2,8 @@
 
 OgrePrototype.TitleMenu = function (game) {
     this.background = null;
+    this.title = null;
+    this.subtitle = null;
     
     this.music = null;
     
@@ -26,10 +28,16 @@ OgrePrototype.TitleMenu.prototype = {
         
         this.TitleScreen = this.add.group();
         
-        text = this.add.text(this.world.centerX, 48, 'Project Ogre\nsimple prototype', {font: 'bold 32pt Arial', fill: '#c39', align: 'center'});
-        text.anchor.setTo(0.5,0.5);
+        this.title = this.add.image(this.world.centerX, 75, 'main-title');
+        this.title.anchor.setTo(0.5, 0.5);
+        this.subtitle = this.add.image(this.world.centerX, this.title.height, 'sub-title');
         
-        this.TitleScreen.add(text);
+        this.TitleScreen.add(this.title);
+        this.TitleScreen.add(this.subtitle);
+        //text = this.add.text(this.world.centerX, 48, 'Project Ogre\nsimple prototype', {font: 'bold 32pt Arial', fill: '#c39', align: 'center'});
+        //text.anchor.setTo(0.5,0.5);
+        
+        //this.TitleScreen.add(text);
         
         text = this.add.text(0, 0, 'PLAY', {font: 'bold 24px Arial', fill: '#f00', align: 'center'});
         text.anchor.setTo(0.5,0.5);

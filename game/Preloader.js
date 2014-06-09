@@ -15,20 +15,22 @@ OgrePrototype.Preloader.prototype = {
         
         this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
         this.load.setPreloadSprite(this.preloadBar);
-    
+
+        this.load.spritesheet('buttonhorizontal', '/tests/phaser/phaser-example-assets/buttons/buttons-big/button-horizontal.png', 96, 64);
+        this.load.spritesheet('flixelbutton', '/tests/phaser/phaser-example-assets/buttons/flixel-button.png', 80, 20);    
     
         this.load.tilemap('map', 'resources/test.json', null, Phaser.Tilemap.TILED_JSON);
         this.load.image('tiles', '/tests/phaser/assets/pogre-sample-tileset.png');
-        this.load.image('castle', '/tests/assets/CastleRed.32.png');
+        this.load.image('castle', '/tests/assets/CastleRed.png');
         
         this.load.spritesheet('icons-units', '/tests/assets/ogre-battle-unit-icons.png', 20, 20);
-        
-        this.load.spritesheet('buttonhorizontal', '/tests/phaser/phaser-example-assets/buttons/buttons-big/button-horizontal.png', 96, 64);
-        this.load.spritesheet('flixelbutton', '/tests/phaser/phaser-example-assets/buttons/flixel-button.png', 80, 20);
         
         
         this.load.spritesheet('down-arrow', '/tests/assets/arrows.png', 23, 45);
         this.load.spritesheet('exclamations', '/tests/assets/6494.png', 71, 39);
+        
+        this.load.image('main-title', '/tests/assets/pogre-title.png', 659, 130);
+        this.load.image('sub-title', '/tests/assets/phaser-subtitle.png', 325, 45);
         this.load.image('valkyrie-title', '/tests/assets/valkyrie00.jpg', 640, 782);
         this.load.image('valkyrie-defeat', '/tests/assets/valkyrie01.jpg', 1024, 768);
         this.load.image('castle-victory', '/tests/assets/unconquered.jpg', 1280, 805);

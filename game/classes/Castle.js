@@ -1,4 +1,8 @@
-OgrePrototype.Castle = function (game, x, y, key, frame, properties) {
+// NOTE: We want to keep the constructor signature the same as Phaser.Sprite
+// so that we can use the Tilemap.createFromObjects method.
+// We will move the properties into a new method, setProperties
+// which we'll call afterwards.
+OgrePrototype.Castle = function (game, x, y, key, frame) {//, properties) {
     Phaser.Sprite.call(this, game, x, y, key, frame);
     
     this.name = 'castle';
@@ -13,6 +17,7 @@ OgrePrototype.Castle = function (game, x, y, key, frame, properties) {
     this.events.onInputDown.add(this.select, this);
     
     /* ************* */
+    /*
     this.properties = {
         label : properties.label || 'castle-default',
         human_label : properties.human_label || 'Castle Default',
@@ -21,13 +26,23 @@ OgrePrototype.Castle = function (game, x, y, key, frame, properties) {
         morale : properties.morale || game.rnd.integerInRange(0,100),
         faction : properties.faction || game.rnd.integerInRange(1, OgrePrototype.factions.length-1)   // we never default to player owned
     };
-    
+    */
     return this;
 };
 
 OgrePrototype.Castle.prototype = Object.create(Phaser.Sprite.prototype);
 OgrePrototype.Castle.prototype.constructor = OgrePrototype.Castle;
 
+OgrePrototype.Castle.prototype.setProperties = function (properties) {
+    this.properties = {
+        label : properties.label || 'castle-default',
+        human_label : properties.human_label || 'Castle Default',
+        defense : properties.defense || this.game.rnd.integerInRange(50,100),
+        gold : properties.gold || this.game.rnd.integerInRange(100,10000),
+        morale : properties.morale || this.game.rnd.integerInRange(0,100),
+        faction : properties.faction || this.game.rnd.integerInRange(1, OgrePrototype.factions.length-1)   // we never default to player owned
+    };
+};
 
 OgrePrototype.Castle.prototype.rollover = function () {
 };
