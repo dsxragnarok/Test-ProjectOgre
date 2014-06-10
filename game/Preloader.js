@@ -25,7 +25,9 @@ OgrePrototype.Preloader.prototype = {
         
         this.load.spritesheet('icons-units', '/tests/assets/ogre-battle-unit-icons.png', 20, 20);
         this.load.spritesheet('arthur-victor', '/tests/assets/arthur-victorious.png', 56, 124);
+        this.load.spritesheet('arthur-flag', '/tests/assets/arthur-flag.png', 119, 113);
         this.load.spritesheet('classes-standing', '/tests/assets/classes-stand.png', 56, 80);
+        this.load.spritesheet('classes-standing-front', '/tests/assets/classes-stand-front.png', 48, 110);
         
         this.load.spritesheet('down-arrow', '/tests/assets/arrows.png', 23, 45);
         this.load.spritesheet('exclamations', '/tests/assets/6494.png', 71, 39);
