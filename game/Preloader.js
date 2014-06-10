@@ -38,10 +38,6 @@ OgrePrototype.Preloader.prototype = {
         this.load.image('main-title-bg', '/tests/assets/title-bg.png', 1024, 768);
         this.load.image('end-title-bg', '/tests/assets/title2-bg.png', 1024, 768);
         
-        this.load.image('valkyrie-title', '/tests/assets/valkyrie00.jpg', 640, 782);
-        this.load.image('valkyrie-defeat', '/tests/assets/valkyrie01.jpg', 1024, 768);
-        this.load.image('castle-victory', '/tests/assets/unconquered.jpg', 1280, 805);
-        
         this.load.spritesheet('btn-menu', '/rtf-assets/btn-menu-102x38.png', 102, 38);
         this.load.spritesheet('btn-castle', '/rtf-assets/btn-castle-102x38.png', 102, 38);
         this.load.spritesheet('btn-party', '/rtf-assets/btn-party-102x38.png', 102, 38);
