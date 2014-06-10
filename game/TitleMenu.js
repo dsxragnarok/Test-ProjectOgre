@@ -11,6 +11,10 @@ OgrePrototype.TitleMenu = function (game) {
     this.InstructionScreen;
     
     this.arthur;
+    this.mage;
+    this.acolyte;
+    this.fighter;
+    this.scout;
 };
 
 OgrePrototype.TitleMenu.prototype = {
@@ -135,6 +139,12 @@ OgrePrototype.TitleMenu.prototype = {
         this.background.destroy();
         this.TitleScreen.destroy();
         this.InstructionScreen.destroy();
+        
+        this.arthur.destroy();
+        this.mage.destroy();
+        this.acolyte.destroy();
+        this.fighter.destroy();
+        this.scout.destroy();
     },
     
     /* ********************************************************************** */

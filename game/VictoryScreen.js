@@ -71,6 +71,12 @@ OgrePrototype.VictoryScreen.prototype = {
         this.background.destroy();
         this.btn.destroy();
         this.titleText.destroy();
+        
+        this.victor.destroy();
+        this.mage.destroy();
+        this.fighter.destroy();
+        this.acolyte.destroy();
+        this.scout.destroy();
     },
     
     menuButton : function () {
