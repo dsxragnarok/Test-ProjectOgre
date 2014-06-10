@@ -160,11 +160,13 @@ OgrePrototype.Game.prototype = {
         this.game.physics.arcade.overlap(this.playerParties, this.foeParties, this.partiesCollide, null, this);
         
         if (this.playerParties.countLiving() === 0) {
-            this.state.start('DefeatScreen');
+            this.game.StateTransitions.to('DefeatScreen');
+            //this.state.start('DefeatScreen');
         }
         
         if (this.foeParties.countLiving() === 0) {
-            this.state.start('VictoryScreen');
+            this.game.StateTransitions.to('VictoryScreen');
+            //this.state.start('VictoryScreen');
         }
     },
     

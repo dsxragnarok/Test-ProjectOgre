@@ -42,6 +42,7 @@ OgrePrototype.DefeatScreen.prototype = {
     },
     
     menuButton : function () {
-        this.state.start('TitleMenu');
+        this.game.StateTransitions.to('TitleMenu');
+        //this.state.start('TitleMenu');
     }
 };

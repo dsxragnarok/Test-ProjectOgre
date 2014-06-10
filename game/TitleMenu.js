@@ -151,7 +151,8 @@ OgrePrototype.TitleMenu.prototype = {
     
     playGame : function () {
         this.music.stop();
-        this.state.start('Game');
+        this.game.StateTransitions.to('Game');
+        //this.state.start('Game');
     },
     
     openInstructions : function () {

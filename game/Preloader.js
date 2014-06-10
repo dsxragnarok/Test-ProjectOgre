@@ -54,6 +54,17 @@ OgrePrototype.Preloader.prototype = {
     },
     
     create : function () {
+        this.game.StateTransitions = this.game.plugins.add(Phaser.Plugin.StateTransition);
+        this.game.StateTransitions.settings({
+            duration : 1500,
+            properties : {
+                alpha : 0,
+                scale : {
+                    x : 1.5,
+                    y : 1.5
+                }
+            }
+        });
         this.preloadBar.cropEnabled = false;
     },
     
