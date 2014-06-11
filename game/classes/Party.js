@@ -30,6 +30,8 @@ OgrePrototype.Party = function (game, x, y, faction, icon) {
     //this.events.onPartyDeselected = new Phaser.Signal();
     this.events.onPartyMoveSelect = new Phaser.Signal();
     
+    this.events.onPartyMoveEnd = new Phaser.Signal();
+    
     /* INITIALIZATION */
     this.inputEnabled = true;
     this.input.useHandCursor = true;
@@ -109,6 +111,8 @@ OgrePrototype.Party.prototype.moveFinished = function () {
     this.destinationMarker.kill();
     console.log(' -- move finished! --');
     this.body.velocity.setTo(0);
+    
+    this.events.onPartyMoveEnd.dispatch(this);
 };
 
 /* *** Menu Stuff *** */

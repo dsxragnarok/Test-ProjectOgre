@@ -29,6 +29,7 @@ OgrePrototype.Game = function (game) {
     
     this.mytweens = [];
     this.fightitout;
+    this.liberation;
 };
 
 OgrePrototype.Game.prototype = {
@@ -44,6 +45,7 @@ OgrePrototype.Game.prototype = {
         this.music.play('',0,0.3,true);
         
         this.se.fightitout = this.add.audio('fightitout');
+        this.se.liberated = this.add.audio('liberated');
         
         this.map = this.game.add.tilemap('map');
         this.map.addTilesetImage('pogre-sample-tileset', 'tiles');
@@ -61,6 +63,8 @@ OgrePrototype.Game.prototype = {
         this.foeParties = this.game.add.group();
         this.neutralParties = this.game.add.group();
         this.playerParties = this.game.add.group();
+        
+        this.castleGroup.enableBody = true;
         
         this.foeParties.enableBody = true;
         this.neutralParties.enableBody = true;
@@ -192,6 +196,7 @@ OgrePrototype.Game.prototype = {
         this.music.stop();
         this.music.destroy(false);
         this.se.fightitout.stop();
+        this.se.liberated.stop();
         this.se.fightitout.destroy(false);
     
         this.map.destroy();
@@ -251,6 +256,7 @@ OgrePrototype.Game.prototype = {
         //party.events.onPartyDeselected.add(this.handlePartyDeselect, this);
         party.events.onPartyMoveSelect.add(this.handlePartyMoveSelect, this);
         party.events.onKilled.add(this.handlePartyKilled, this);
+        party.events.onPartyMoveEnd.add(this.handlePartyFinishedMoving, this);
         
         party.revive(100);
         if (OgrePrototype.factions[party.properties.faction] === 'player') {
@@ -284,6 +290,18 @@ OgrePrototype.Game.prototype = {
         // center camera on player
         
         this.mytweens.push(this.game.add.tween(this.game.camera).to({x:castle.x-this.game.camera.screenView.width/2,y:castle.y-this.game.camera.screenView.height/2}, speed, Phaser.Easing.Linear.None, true));
+    },
+    
+    partyOnCastle : function (party, castle) {
+        console.log(party);
+        console.log(castle);
+        return party.properties.faction !== castle.properties.faction;
+    },
+    
+    conquerCastle : function (party, castle) {
+        castle.properties.faction = party.properties.faction;
+        this.se.liberated.play();
+        console.log('You\'ve conquered this castle!');
     },
     
     partiesCollide : function (PartyOne, PartyTwo) {
@@ -584,5 +602,10 @@ OgrePrototype.Game.prototype = {
             this.selectedPartyMenu.hide();
             this.playerPartySelected = undefined;
         }
+    },
+    
+    handlePartyFinishedMoving : function (party) {
+        console.log('party finished move signal received');
+        this.game.physics.arcade.overlap(party, this.castleGroup, this.conquerCastle, this.partyOnCastle, this);
     }
 };

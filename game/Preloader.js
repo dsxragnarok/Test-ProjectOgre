@@ -51,6 +51,7 @@ OgrePrototype.Preloader.prototype = {
         this.load.audio('title-music', ['/tests/assets/sounds/101-overture.mp3', '/tests/assets/sounds/101-overture.ogg']);
         this.load.audio('march', ['/tests/assets/sounds/102-unit-march.mp3', '/tests/assets/sounds/102-unit-march.ogg']);
         this.load.audio('fightitout', ['/tests/assets/sounds/fightitout.mp3', '/tests/assets/sounds/fightitout.ogg']);
+        this.load.audio('liberated', ['/tests/assets/sounds/liberated.mp3', '/tests/assets/sounds/liberated.ogg']);
     },
     
     create : function () {
