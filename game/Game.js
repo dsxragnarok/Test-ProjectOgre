@@ -92,6 +92,9 @@ OgrePrototype.Game.prototype = {
         this.fightitout = this.game.add.sprite(0, 0, 'exclamations', 1);
         this.fightitout.visible = false;
         
+        this.liberation = this.game.add.sprite(0, 0, 'exclamations', 4);
+        this.liberation.visible = false;
+        
         this.createHUD();
         
         //this.selectedPartyMenu = this.createOnePartyMenu();
@@ -217,6 +220,9 @@ OgrePrototype.Game.prototype = {
         
         this.game.tweens.removeAll();
         
+        this.fightitout.destroy();
+        this.liberation.destroy();
+        
         var i = 0;
         for (i; i < this.mytweens.length; i += 1) {
             this.mytweens[i].onComplete.removeAll();
@@ -300,7 +306,8 @@ OgrePrototype.Game.prototype = {
     
     conquerCastle : function (party, castle) {
         castle.properties.faction = party.properties.faction;
-        this.se.liberated.play();
+        this.showLiberated(castle);
+        //this.se.liberated.play();
         console.log('You\'ve conquered this castle!');
     },
     
@@ -590,6 +597,17 @@ OgrePrototype.Game.prototype = {
         // for simplicity, going to use setTimeout for now.
         setTimeout(function () {
             fight.visible = false;
+        }, 3000);
+    },
+    
+    showLiberated : function (element) {
+        var liberated = this.liberation;
+        liberated.position.setTo(element.x, element.y - 32);
+        liberated.visible = true;
+        this.se.liberated.play();
+        
+        setTimeout(function () {
+            liberated.visible = false;
         }, 3000);
     },
     
