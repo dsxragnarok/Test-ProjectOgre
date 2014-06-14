@@ -30,6 +30,10 @@ OgrePrototype.Game = function (game) {
     this.mytweens = [];
     this.fightitout;
     this.liberation;
+    
+    
+    // ----
+    this.castlesOwned = 0;
 };
 
 OgrePrototype.Game.prototype = {
@@ -70,7 +74,7 @@ OgrePrototype.Game.prototype = {
         this.neutralParties.enableBody = true;
         this.playerParties.enableBody = true;
         
-        this.map.createFromObjects('Object Layer 1', 15, 'castle', 0, true, false, this.castleGroup, OgrePrototype.Castle);
+        this.map.createFromObjects('Object Layer 1', 15, 'castles', 0, true, false, this.castleGroup, OgrePrototype.Castle);
         /* test creating castle sprites */
         //this.map.forEach(this.maybeCreateCastle, this, 0, 0, this.map.width, this.map.height, 'locations');
         this.castleGroup.forEach(function (castle) {
@@ -278,7 +282,7 @@ OgrePrototype.Game.prototype = {
         var castle, coords;
         if (tile.index >= 0) {
             coords = this.tileToWorldCoordinates(tile.x, tile.y);
-            castle = new OgrePrototype.Castle(this.game, coords.x, coords.y, 'castle', 0, {label:'Castle-' + tile.x + ':' + tile.y});
+            castle = new OgrePrototype.Castle(this.game, coords.x, coords.y, 'castles', 0, {label:'Castle-' + tile.x + ':' + tile.y});
             
             this.game.add.existing(castle);
             this.castleGroup.add(castle);
@@ -293,8 +297,9 @@ OgrePrototype.Game.prototype = {
             speed = Math.floor(this.game.math.distance(this.game.camera.x, this.game.camera.y, castle.x - 400, castle.y - 300) * 2);
         
         castle.properties.faction = 0; // 0 index of factions is 'player'
+        castle.frame = 1;
         // center camera on player
-        
+        this.castlesOwned += 1;
         this.mytweens.push(this.game.add.tween(this.game.camera).to({x:castle.x-this.game.camera.screenView.width/2,y:castle.y-this.game.camera.screenView.height/2}, speed, Phaser.Easing.Linear.None, true));
     },
     

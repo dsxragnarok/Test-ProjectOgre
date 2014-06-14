@@ -42,6 +42,10 @@ OgrePrototype.Castle.prototype.setProperties = function (properties) {
         morale : properties.morale || this.game.rnd.integerInRange(0,100),
         faction : properties.faction || this.game.rnd.integerInRange(1, OgrePrototype.factions.length-1)   // we never default to player owned
     };
+    
+    if (this.properties.faction === 1) {
+        this.frame = 2;
+    }
 };
 
 OgrePrototype.Castle.prototype.rollover = function () {

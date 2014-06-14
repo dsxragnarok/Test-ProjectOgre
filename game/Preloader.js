@@ -21,8 +21,9 @@ OgrePrototype.Preloader.prototype = {
     
         this.load.tilemap('map', 'resources/test.json', null, Phaser.Tilemap.TILED_JSON);
         this.load.image('tiles', '/tests/phaser/assets/pogre-sample-tileset.png');
-        this.load.image('castle', '/tests/assets/CastleRed.png');
+        //this.load.image('castle', '/tests/assets/CastleRed.png');
         
+        this.load.spritesheet('castles', '/tests/assets/castles.png', 64,64);
         this.load.spritesheet('icons-units', '/tests/assets/ogre-battle-unit-icons.png', 20, 20);
         this.load.spritesheet('arthur-victor', '/tests/assets/arthur-victorious.png', 56, 124);
         this.load.spritesheet('arthur-flag', '/tests/assets/arthur-flag.png', 119, 113);
