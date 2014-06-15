@@ -19,10 +19,12 @@ OgrePrototype.Game = function (game) {
     this.neutralParties;
     
     this.playerPartySelected;
+    this.playerCastleSelected;
     
     this.selectedPartyMenu;
     this.selectedCastleMenu;
     this.mainMenu;
+    this.castleStatus;
     
     this.selectedIndicator;
     this.HUD;
@@ -101,15 +103,14 @@ OgrePrototype.Game.prototype = {
         this.liberation = this.game.add.sprite(0, 0, 'exclamations', 4);
         this.liberation.visible = false;
         */
-        
+
+        this.createOneCastleStatusScreen();        
         this.createHUD();
         
         //this.selectedPartyMenu = this.createOnePartyMenu();
         this.createMainMenu();
         this.createOneCastleMenu();
         this.createOnePartyMenu();
-        
-        this.createOneCastleStatusScreen();
         
         /* ** Handle Scrolling of the map via mouse & touch drag ** */
         // http://www.html5gamedevs.com/topic/6351-dragging-a-tilesprite/#entry37979
@@ -413,7 +414,7 @@ OgrePrototype.Game.prototype = {
         this.menubtn = this.game.add.button(32, this.game.camera.screenView.height - 80, 'btn-menu', this.toggleMainMenu, this, 1, 0, 1, 0);
         this.HUD.add(this.menubtn);
         
-        this.castlebtn = this.game.add.button((32 + 102) * 2, this.game.camera.screenView.height - 80, 'btn-castle', null, null, 1, 0, 1, 0);
+        this.castlebtn = this.game.add.button((32 + 102) * 2, this.game.camera.screenView.height - 80, 'btn-castle', this.closeCastleStatus, this, 1, 0, 1, 0);
         this.HUD.add(this.castlebtn);
         
         this.partybtn = this.game.add.button((32 + 102) * 3 , this.game.camera.screenView.height - 80, 'btn-party', 
@@ -431,7 +432,9 @@ OgrePrototype.Game.prototype = {
     
     createOneCastleStatusScreen : function () {
         this.castleStatus = this.game.add.group();
-        this.castleStatus.position.setTo(150, 150);
+        this.castleStatus.fixedToCamera = true;
+        this.castleStatus.cameraOffset.setTo((32 + 102) * 2, this.game.camera.screenView.height);
+        //this.castleStatus.position.setTo(150, 150);
         
         var bmd = this.game.add.bitmapData(200, 150);
         
@@ -487,7 +490,7 @@ OgrePrototype.Game.prototype = {
                 }
             }, this);
         };
-        this.castleStatus.visible = false;
+        this.castleStatus.visible = true;
         //text = this.add.text(0, 0, 'INSTRUCTIONS', {font: 'bold 12px Arial', fill: '#f00', align: 'center'});
         //text.anchor.setTo(0.5,0.5);
     },
@@ -585,23 +588,26 @@ OgrePrototype.Game.prototype = {
         this.selectedCastleMenu.addButton(0, 0, '', null, this, 21, 17, 21, 17, {key: 'shop'});
         //this.selectedCastleMenu.addButton(0, 0, '', this.selectedCastleMenu.hide, this.selectedCastleMenu, 20, 16, 20, 16, {key: 'cancel'});
         this.selectedCastleMenu.addButton(0, 0, '', function () {
-            this.playerPartySelected.removeChild(this.selectedIndicator);
-            
-            this.playerPartySelected = undefined;
+            this.playerCastleSelected.removeChild(this.selectedIndicator);
+            this.closeCastleStatus();
+            /*
+            this.playerCastleSelected = undefined;
             this.selectedCastleMenu.hide();
             this.selectedIndicator.visible = false;
             this.selectedIndicator.animations.stop('idle');
+            */
         }, this, 20, 16, 20, 16, {key: 'cancel'});
     },
     
     handleCastleSelect : function (castle) {
         if (OgrePrototype.factions[castle.properties.faction] === 'player') {
-            if (this.playerPartySelected && this.playerPartySelected.name === 'party') {
+            /*if (this.playerPartySelected && this.playerPartySelected.name === 'party') {
                 this.playerPartySelected.hideDestinationMarker();
                 this.playerPartySelected = undefined;
-            }
+            }*/
 
-            this.playerPartySelected = castle;
+
+            this.playerCastleSelected = castle;
             this.selectedCastleMenu.show();
             this.showSelectedIndicator(castle);
             
@@ -610,8 +616,18 @@ OgrePrototype.Game.prototype = {
         }
         
         this.castleStatus.updateInformation(castle.properties);
-        this.castleStatus.position.setTo(castle.position.x - 200, castle.position.y);
+        
+        /*
+        this.castleStatus.position.setTo(
+            castle.position.x - 200 < 0 ? castle.position.x + 200 : castle.position.x - 200, 
+            castle.position.y
+        );
+        */
         this.castleStatus.visible = true;
+        this.mytweens.push(this.game.add.tween(this.castleStatus.cameraOffset).to({y:this.game.camera.screenView.height - 250}, 2000, Phaser.Easing.Linear.None, true));
+        /*
+        this.mytweens.push(this.game.add.tween(this.game.camera).to({x:this.playerPartySelected.x-this.game.camera.screenView.width/2, y:this.playerPartySelected.y-this.game.camera.screenView.height/2}, 2000, Phaser.Easing.Linear.None, true));
+        */
     },
     
     createMainMenu : function () {
@@ -638,6 +654,25 @@ OgrePrototype.Game.prototype = {
             };
         }, this, 44, 40, 44, 40, {key: 'quit'});
         this.mainMenu.addButton(0, 0, '', this.mainMenu.hide, this.mainMenu, 20, 16, 20, 16, {key: 'cancel'});
+    },
+    
+    closeCastleStatus : function () {
+        var castleScreen = this.castleStatus;
+        var tween = this.game.add.tween(this.castleStatus.cameraOffset).to({y:this.game.camera.screenView.height}, 2000, Phaser.Easing.Linear.None, true);
+        tween.onComplete.add(function () {
+            castleScreen.visible = false;
+        });
+        this.mytweens.push(tween);
+        
+        if (this.playerSelectedCastle) {
+            this.playerCastleSelected.removeChild(this.selectedIndicator);
+            this.playerCastleSelected = undefined;
+            this.selectedCastleMenu.hide();
+            this.selectedIndicator.visible = false;
+            this.selectedIndicator.animations.stop('idle');
+            
+            this.playerSelectedCastle = undefined;
+        }
     },
     
     toggleMainMenu : function () {
