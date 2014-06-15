@@ -19,5 +19,14 @@ var OgrePrototype = {
         1:'scout', 
         2:'acolyte', 
         3:'mage'
+    },
+    
+    exclamations : {
+        'thank' : 0,
+        'fightitout' : 1,
+        'findout' : 2,
+        'lucky' : 3,
+        'liberation' : 4,
+        'boo' : 5
     }
 };

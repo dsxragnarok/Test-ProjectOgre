@@ -58,7 +58,7 @@ OgrePrototype.Preloader.prototype = {
     create : function () {
         this.game.StateTransitions = this.game.plugins.add(Phaser.Plugin.StateTransition);
         this.game.StateTransitions.settings({
-            duration : 1500,
+            duration : 500,
             properties : {
                 alpha : 0,
                 scale : {

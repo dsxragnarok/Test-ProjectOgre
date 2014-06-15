@@ -28,9 +28,7 @@ OgrePrototype.Game = function (game) {
     this.HUD;
     
     this.mytweens = [];
-    this.fightitout;
-    this.liberation;
-    
+    this.exclamations = [];
     
     // ----
     this.castlesOwned = 0;
@@ -93,11 +91,16 @@ OgrePrototype.Game.prototype = {
         this.selectedIndicator.visible = false;
         this.selectedIndicator.animations.add('idle', [0,1,2,1], 1000, true);
         
+        //this.exclamations = this.game.add.sprite(0, 0, 'exclamations');
+        this.exclamations[0] = this.game.add.sprite(0, 0, 'exclamations');
+        this.exclamations[0].visible = false;
+        /*
         this.fightitout = this.game.add.sprite(0, 0, 'exclamations', 1);
         this.fightitout.visible = false;
         
         this.liberation = this.game.add.sprite(0, 0, 'exclamations', 4);
         this.liberation.visible = false;
+        */
         
         this.createHUD();
         
@@ -105,6 +108,8 @@ OgrePrototype.Game.prototype = {
         this.createMainMenu();
         this.createOneCastleMenu();
         this.createOnePartyMenu();
+        
+        this.createOneCastleStatusScreen();
         
         /* ** Handle Scrolling of the map via mouse & touch drag ** */
         // http://www.html5gamedevs.com/topic/6351-dragging-a-tilesprite/#entry37979
@@ -171,13 +176,11 @@ OgrePrototype.Game.prototype = {
         this.game.physics.arcade.overlap(this.playerParties, this.foeParties, this.partiesCollide, null, this);
         
         if (this.playerParties.countLiving() === 0) {
-            this.game.StateTransitions.to('DefeatScreen');
-            //this.state.start('DefeatScreen');
+            this.endGameTransition('DefeatScreen');
         }
         
-        if (this.foeParties.countLiving() === 0) {
-            this.game.StateTransitions.to('VictoryScreen');
-            //this.state.start('VictoryScreen');
+        if (this.castlesOwned >= this.castleGroup.length) {
+            this.endGameTransition('VictoryScreen');
         }
     },
     
@@ -200,6 +203,7 @@ OgrePrototype.Game.prototype = {
     },
     
     shutdown : function () {
+        var i;
         this.music.stop();
         this.music.destroy(false);
         this.se.fightitout.stop();
@@ -224,11 +228,12 @@ OgrePrototype.Game.prototype = {
         
         this.game.tweens.removeAll();
         
-        this.fightitout.destroy();
-        this.liberation.destroy();
+        for (i = 0; i < this.exclamations.length; i +=1 ) {
+            this.exclamations[i].destroy();
+            this.exclamations = [];
+        }
         
-        var i = 0;
-        for (i; i < this.mytweens.length; i += 1) {
+        for (i = 0; i < this.mytweens.length; i += 1) {
             this.mytweens[i].onComplete.removeAll();
             this.mytweens[i].stop();
             this.mytweens[i] = null;
@@ -311,8 +316,9 @@ OgrePrototype.Game.prototype = {
     
     conquerCastle : function (party, castle) {
         castle.properties.faction = party.properties.faction;
-        this.showLiberated(castle);
-        //this.se.liberated.play();
+        castle.frame = 1;
+        this.showExclam(castle, 'liberation', this.se.liberated, 32, -32);
+        this.castlesOwned += 1;
         console.log('You\'ve conquered this castle!');
     },
     
@@ -354,7 +360,8 @@ OgrePrototype.Game.prototype = {
             this.mytweens.push(
                 this.game.add.tween(this.game.camera).to({x:PartyOne.x-this.game.camera.screenView.width/2,y:PartyOne.y-this.game.camera.screenView.height/2}, 1000, Phaser.Easing.Linear.None, true)
             );
-            this.showFightExclam(PartyTwo);
+            //this.showFightExclam(PartyTwo);
+            this.showExclam(PartyTwo, 'fightitout', this.se.fightitout, 32, -32);
             roll = Math.floor(Math.random() * 100);
             p1 = OgrePrototype.jobs[PartyOne.properties.leader];
             p2 = OgrePrototype.jobs[PartyTwo.properties.leader];
@@ -420,6 +427,69 @@ OgrePrototype.Game.prototype = {
         this.HUD.add(this.partybtn);
         
         this.HUD.fixedToCamera = true;
+    },
+    
+    createOneCastleStatusScreen : function () {
+        this.castleStatus = this.game.add.group();
+        this.castleStatus.position.setTo(150, 150);
+        
+        var bmd = this.game.add.bitmapData(200, 150);
+        
+        bmd.context.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        bmd.context.fillRect(0, 0, 200, 300);
+        var bg = this.add.sprite(0, 0, bmd);
+        this.castleStatus.add(bg);
+        
+        var label = this.add.text(10, 10, '', {font: 'bold 12pt Arial', fill: '#cc0', align: 'center'});
+        label.name = 'label';
+        
+        this.castleStatus.add(label);
+        
+        label = this.add.text(10, 32, 'Faction: ', {font: 'bold 12pt Arial', fill: '#cc0', align: 'left'});
+        label.name = 'faction';
+        
+        this.castleStatus.add(label);
+        
+        label = this.add.text(10, 54, 'Morale: ', {font: 'bold 12pt Arial', fill: '#cc0', align: 'left'});
+        label.name = 'morale';
+        
+        this.castleStatus.add(label);
+        
+        label = this.add.text(10, 76, 'Defense: ', {font: 'bold 12pt Arial', fill: '#cc0', align: 'left'});
+        label.name = 'defense';
+        
+        this.castleStatus.add(label);
+        
+        label = this.add.text(10, 98, 'Income: ', {font: 'bold 12pt Arial', fill: '#cc0', align: 'left'});
+        label.name = 'income';
+        
+        this.castleStatus.add(label);
+        
+        this.castleStatus.updateInformation = function (info) {
+            console.log('called castle status update information function');
+            this.forEach(function (child) {
+                console.log('status child');
+                console.log(child);
+                if (child.name === 'label') {
+                    child.setText(info.label);
+                }
+                if (child.name === 'faction') {
+                    child.setText('Faction: ' + info.faction);
+                }
+                if (child.name === 'morale') {
+                    child.setText('Morale: ' + info.morale);
+                }
+                if (child.name === 'defense') {
+                    child.setText('Defense: ' + info.defense);
+                }
+                if (child.name === 'income') {
+                    child.setText('Income: ' + info.gold);
+                }
+            }, this);
+        };
+        this.castleStatus.visible = false;
+        //text = this.add.text(0, 0, 'INSTRUCTIONS', {font: 'bold 12px Arial', fill: '#f00', align: 'center'});
+        //text.anchor.setTo(0.5,0.5);
     },
     
     createOnePartyMenu : function () {
@@ -538,6 +608,10 @@ OgrePrototype.Game.prototype = {
             this.mainMenu.hide();
             this.selectedPartyMenu.hide();
         }
+        
+        this.castleStatus.updateInformation(castle.properties);
+        this.castleStatus.position.setTo(castle.position.x - 200, castle.position.y);
+        this.castleStatus.visible = true;
     },
     
     createMainMenu : function () {
@@ -559,7 +633,8 @@ OgrePrototype.Game.prototype = {
         this.mainMenu.addButton(0, 0, '', null, this, 39, 35, 39, 35, {key: 'settings'});
         this.mainMenu.addButton(0, 0, '', function () {
             if (window.confirm('Are you sure you want to quit?')) {
-                this.state.start('TitleMenu');
+                this.endGameTransition('TitleMenu', 1);
+                //this.state.start('TitleMenu');
             };
         }, this, 44, 40, 44, 40, {key: 'quit'});
         this.mainMenu.addButton(0, 0, '', this.mainMenu.hide, this.mainMenu, 20, 16, 20, 16, {key: 'cancel'});
@@ -594,26 +669,40 @@ OgrePrototype.Game.prototype = {
         this.selectedIndicator.visible = true;
     },
     
-    showFightExclam : function (element) {
-        var fight = this.fightitout;
-        fight.position.setTo(element.x, element.y - 32);
-        fight.visible = true;
-        this.se.fightitout.play();
-        // for simplicity, going to use setTimeout for now.
-        setTimeout(function () {
-            fight.visible = false;
-        }, 3000);
-    },
-    
-    showLiberated : function (element) {
-        var liberated = this.liberation;
-        liberated.position.setTo(element.x, element.y - 32);
-        liberated.visible = true;
-        this.se.liberated.play();
+    showExclam : function (fromEntity, key, sound, offsetX, offsetY) {
+        var x = fromEntity.x, 
+            y = fromEntity.y,
+            i = 0, exclamation;
         
-        setTimeout(function () {
-            liberated.visible = false;
-        }, 3000);
+        if (offsetX) {
+            x += offsetX;
+        }
+        
+        if (offsetY) {
+            y += offsetY;
+        }
+        
+        if (sound) {
+            sound.play();
+        }
+        
+        for (i = 0; i < this.exclamations.length; i +=1) {
+            if (!this.exclamations[i].visible) {
+                exclamation = this.exclamations[i];
+            }
+        }
+        
+        if (!exclamation) {
+            exclamation = this.game.add.sprite(0, 0, 'exclamations');
+            this.exclamations.push(exclamation);
+        }
+        
+        exclamation.frame = OgrePrototype.exclamations[key];
+        exclamation.position.setTo(x,y);
+        exclamation.visible = true;
+        this.game.time.events.add(Phaser.Timer.SECOND * 3, function () {
+            exclamation.visible = false;
+        }, this);
     },
     
     handlePartyMoveSelect : function (party) {
@@ -630,5 +719,12 @@ OgrePrototype.Game.prototype = {
     handlePartyFinishedMoving : function (party) {
         console.log('party finished move signal received');
         this.game.physics.arcade.overlap(party, this.castleGroup, this.conquerCastle, this.partyOnCastle, this);
+    },
+    
+    endGameTransition : function (key, time) {
+        var t = time || 3;
+        this.game.time.events.add(Phaser.Timer.SECOND * t, function () {
+            this.game.StateTransitions.to(key);
+        }, this);
     }
 };
