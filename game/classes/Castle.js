@@ -38,7 +38,7 @@ OgrePrototype.Castle.prototype.setProperties = function (properties) {
         label : properties.label || 'castle-default',
         human_label : properties.human_label || 'Castle Default',
         defense : properties.defense || this.game.rnd.integerInRange(50,100),
-        gold : properties.gold || this.game.rnd.integerInRange(100,10000),
+        gold : properties.gold || this.game.rnd.integerInRange(10,255),
         morale : properties.morale || this.game.rnd.integerInRange(0,100),
         faction : properties.faction || this.game.rnd.integerInRange(1, OgrePrototype.factions.length-1)   // we never default to player owned
     };

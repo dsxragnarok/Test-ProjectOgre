@@ -29,8 +29,13 @@ OgrePrototype.Game = function (game) {
     this.selectedIndicator;
     this.HUD;
     
+    this.battleMessage;
+    
     this.mytweens = [];
     this.exclamations = [];
+    
+    
+    this.nightOverlay;
     
     // ----
     this.castlesOwned = 0;
@@ -86,6 +91,7 @@ OgrePrototype.Game.prototype = {
         this.givePlayerCastle();
         this.spawnParties();
         
+        this.createNightOverlay();
         
         this.selectedIndicator = this.game.add.sprite(0, 0, 'down-arrow');
         this.selectedIndicator.scale.setTo(0.5,0.5);
@@ -390,6 +396,30 @@ OgrePrototype.Game.prototype = {
     
     /* ****************** MENU ********************************************** */
     
+    createNightOverlay : function () {
+        var bmd;
+        
+        bmd = this.game.add.bitmapData(this.game.camera.screenView.width, this.game.camera.screenView.height);
+        
+        bmd.context.fillStyle = 'rgba(0, 0, 0)';
+        bmd.context.fillRect(0, 0, this.game.camera.screenView.width, this.game.camera.screenView.height);
+        
+        this.nightOverlay = this.game.add.sprite(0, 0, bmd);
+        this.nightOverlay.fixedToCamera = true;
+        
+        this.nightOverlay.alpha = 0;
+        
+        this.dayNightTween = this.game.add.tween(this.nightOverlay).to({alpha:0.75}, Phaser.Timer.SECOND * 30, Phaser.Easing.Linear.None, true, 0, Number.MAX_VALUE, true);
+        
+        this.day = 0;
+        
+        this.dayNightTween.onLoop.add(function () {
+            this.day += 1;
+            console.log('day: ' + this.day);
+        }, this);
+        //this.mytweens.push(this.game.add.tween(this.game.camera).to({x:this.playerPartySelected.x-this.game.camera.screenView.width/2, y:this.playerPartySelected.y-this.game.camera.screenView.height/2}, 2000, Phaser.Easing.Linear.None, true));
+    },
+    
     createHUD : function () {
         // we want to have a 32px-height bar across the top and a 64px-height
         // bar running across the bottom.
@@ -474,7 +504,7 @@ OgrePrototype.Game.prototype = {
                 console.log('status child');
                 console.log(child);
                 if (child.name === 'label') {
-                    child.setText(info.label);
+                    child.setText(info.human_label);
                 }
                 if (child.name === 'faction') {
                     child.setText('Faction: ' + info.faction);
