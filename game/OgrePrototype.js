@@ -28,5 +28,31 @@ var OgrePrototype = {
         'lucky' : 3,
         'liberation' : 4,
         'boo' : 5
-    }
+    },
+    
+    calendar : {
+        daysPerMonth : 30,
+        monthsPerYear : 12,
+        months : {
+            1 : 'Snowfun',
+            2 : 'Darktime',
+            3 : 'Windsong',
+            4 : 'Raindrum',
+            5 : 'Flowerfield',
+            6 : 'Homefriends',
+            7 : 'Wandertime',
+            8 : 'Summerlaze',
+            9 : 'Harvestfete',
+            10 : 'Leafplay',
+            11 : 'Bleakcold',
+            12 : 'Blessings'
+        }
+    },
+    
+    names : {
+        kings : ['Robb','Joffrey','Stannis','Renly','Balon']
+    },
+    
+    STARTING_GOLD : 300,
+    STARTING_REPUTATION : 50
 };

@@ -10,8 +10,6 @@ OgrePrototype.Game = function (game) {
     this.layer_locations;
     this.cursors;
 
-    // TODO: CastleGroup and PartyGroups should be their own classes extending Phaser.Group
-    
     this.castleGroup;
     
     this.foeParties;
@@ -34,11 +32,14 @@ OgrePrototype.Game = function (game) {
     this.mytweens = [];
     this.exclamations = [];
     
-    
     this.nightOverlay;
+    this.day;
+    this.month;
+    this.year;
     
     // ----
-    this.castlesOwned = 0;
+    this.castlesOwned = 0;  // should probably be in the Player class
+    this.player;
 };
 
 OgrePrototype.Game.prototype = {
@@ -87,10 +88,12 @@ OgrePrototype.Game.prototype = {
             castle.events.onCastleSelected.add(this.handleCastleSelect, this);
         }, this);
         
+        this.player = new OgrePrototype.Player(this.game);
         
         this.givePlayerCastle();
         this.spawnParties();
         
+        this.startTimeTracker();
         this.createNightOverlay();
         
         this.selectedIndicator = this.game.add.sprite(0, 0, 'down-arrow');
@@ -189,6 +192,9 @@ OgrePrototype.Game.prototype = {
         if (this.castlesOwned >= this.castleGroup.length) {
             this.endGameTransition('VictoryScreen');
         }
+        
+        // update HUD -- 
+        this.gold.setText('GOLD: ' + this.player.gold);
     },
     
     // this is run while this.paused === true
@@ -207,6 +213,8 @@ OgrePrototype.Game.prototype = {
                     OgrePrototype.jobs[this.playerPartySelected.properties.leader], 360, 32, 'rgb(255,0,255)');
             }
         }
+        
+        this.game.debug.text('Time until next day: ' + this.game.time.events.duration, 8, 40);
     },
     
     shutdown : function () {
@@ -232,6 +240,10 @@ OgrePrototype.Game.prototype = {
         this.playerPartySelected = null;
         
         this.selectedPartyMenu.destroy();
+        this.HUD.destroy();
+        this.castleStatus.destroy();
+        
+        this.nightOverlay.destroy();
         
         this.game.tweens.removeAll();
         
@@ -246,6 +258,15 @@ OgrePrototype.Game.prototype = {
             this.mytweens[i] = null;
         }
         this.mytweens = [];
+        
+        this.dayNightTween.onComplete.removeAll();
+        this.dayNightTween.stop();
+        this.dayNightTween = null;
+        
+        this.castlesOwned = 0;
+        this.player = null;
+        
+        this.time.removeAll();
     },
     
     /* ********************************************************************** */
@@ -395,6 +416,28 @@ OgrePrototype.Game.prototype = {
     },
     
     /* ****************** MENU ********************************************** */
+    startTimeTracker : function () {
+        this.day = this.game.rnd.integerInRange(1, OgrePrototype.calendar.daysPerMonth);
+        this.month = this.game.rnd.integerInRange(1, OgrePrototype.calendar.monthsPerYear);
+        this.year = this.game.rnd.integerInRange(100, 500);
+        
+        console.log(this.time);
+        this.time.events.loop(Phaser.Timer.MINUTE * 2, function () {
+            this.day += 1;
+            
+            if (this.day > OgrePrototype.calendar.daysPerMonth) {
+                this.day = 1;
+                this.month += 1;
+                
+                if (this.month > OgrePrototype.calendar.monthsPerYear) {
+                    this.month = 1;
+                    this.year += 1;
+                }
+            }
+            
+            this.calendar.setText(this.day + 'th day of ' + OgrePrototype.calendar.months[this.month] + ', year ' + this.year);
+        }, this);
+    },
     
     createNightOverlay : function () {
         var bmd;
@@ -407,23 +450,15 @@ OgrePrototype.Game.prototype = {
         this.nightOverlay = this.game.add.sprite(0, 0, bmd);
         this.nightOverlay.fixedToCamera = true;
         
-        this.nightOverlay.alpha = 0;
+        this.nightOverlay.alpha = 0.75;
         
-        this.dayNightTween = this.game.add.tween(this.nightOverlay).to({alpha:0.75}, Phaser.Timer.SECOND * 30, Phaser.Easing.Linear.None, true, 0, Number.MAX_VALUE, true);
-        
-        this.day = 0;
-        
-        this.dayNightTween.onLoop.add(function () {
-            this.day += 1;
-            console.log('day: ' + this.day);
-        }, this);
-        //this.mytweens.push(this.game.add.tween(this.game.camera).to({x:this.playerPartySelected.x-this.game.camera.screenView.width/2, y:this.playerPartySelected.y-this.game.camera.screenView.height/2}, 2000, Phaser.Easing.Linear.None, true));
+        this.dayNightTween = this.game.add.tween(this.nightOverlay).to({alpha:0}, Phaser.Timer.MINUTE, Phaser.Easing.Linear.None, true, 0, Number.MAX_VALUE, true);
     },
     
     createHUD : function () {
         // we want to have a 32px-height bar across the top and a 64px-height
         // bar running across the bottom.
-        var bmd, bg, btn;
+        var bmd, bg, btn, text;
         
         this.HUD = this.game.add.group();
         
@@ -456,6 +491,28 @@ OgrePrototype.Game.prototype = {
             }, this, 1, 0, 1, 0);
             
         this.HUD.add(this.partybtn);
+        
+        this.calendar = this.game.add.text(
+            this.game.camera.screenView.width - 300, 8, 
+            this.day + 'th day of ' + OgrePrototype.calendar.months[this.month] + ', Year ' + this.year,
+            {font: 'bold 12pt Arial', fill: '#cc0', align: 'right' }
+        );
+            
+        this.HUD.add(this.calendar);
+        
+        text = this.game.add.text(
+            16, 8,
+            this.player.hero_name,
+            {font: 'bold 12pt Arial', fill: '#cc0', align: 'left'}
+        );
+        this.HUD.add(text);
+        
+        this.gold = this.game.add.text(
+            100, 8,
+            'GOLD: ' + this.player.gold,
+            {font: 'bold 12pt Arial', fill: '#cc0', align: 'right' }
+        );
+        this.HUD.add(this.gold);
         
         this.HUD.fixedToCamera = true;
     },
