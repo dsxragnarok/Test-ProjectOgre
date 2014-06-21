@@ -5,7 +5,7 @@ OgrePrototype.Boot = function (game) {
 
 OgrePrototype.Boot.prototype = {
     preload : function () {
-        this.load.image('preloader', '/tests/assets/preload.png');
+        this.load.image('preloader', 'assets/preload.png');
     },
     
     create : function () {
