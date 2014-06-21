@@ -12,7 +12,8 @@ OgrePrototype.Menu = function (game, parent, settings) {
         spacing : settings.spacing || 0,
         padding : settings.padding || 0,
         topOffset : settings.topOffset || 0,
-        leftOffset : settings.leftOffset || 0
+        leftOffset : settings.leftOffset || 0,
+        orientation : settings.orientation || 'horizontal'
     };
     
     this.buttons = {};
@@ -37,8 +38,11 @@ OgrePrototype.Menu.prototype.hide = function () {
 
 OgrePrototype.Menu.prototype.show = function (options) {
     var x,y;
+    console.log(this);
     if (options) {
-        this.fixedToCamera = options.fixedToCamera || this.fixedToCamera;
+        if (options.fixedToCamera !== undefined && options.fixedToCamera !== null) {
+            this.fixedToCamera = options.fixedToCamera;
+        }
         x = options.x || this.properties.lastX;
         y = options.y || this.properties.lastY;
     } else {
@@ -54,12 +58,12 @@ OgrePrototype.Menu.prototype.show = function (options) {
         this.x = x;
         this.y = y;
     }
-    
+    console.log(this.x + " - " + this.y + ' ~ ' + this.fixedToCamera);
     this.visible = true;
 };
 
 OgrePrototype.Menu.prototype.addButton = function (x, y, label, callbackFnc, callbackContext, overFrame, outFrame, downFrame, upFrame, options) {
-    var wscale, hscale, btn, text, style, key;
+    var wscale, hscale, btn, text, style, key, imgsrc;
     
     if (options) {
         style = options.style || {
@@ -69,6 +73,8 @@ OgrePrototype.Menu.prototype.addButton = function (x, y, label, callbackFnc, cal
         };
         
         key = options.key || this.numOfButtons + 1;
+
+        imgsrc = options.imgsrc || 'icons-00';
     } else {
         style = {
             font : 'bold 10pt Arial',
@@ -77,9 +83,11 @@ OgrePrototype.Menu.prototype.addButton = function (x, y, label, callbackFnc, cal
         };
         
         key = this.numOfButtons + 1;
+
+        imgsrc = 'icons-00';
     }
     
-    btn = this.game.add.button(x, y, 'icons-00', callbackFnc, callbackContext, overFrame, outFrame, downFrame, upFrame);
+    btn = this.game.add.button(x, y, imgsrc, callbackFnc, callbackContext, overFrame, outFrame, downFrame, upFrame);
     
     //wscale = (this.properties.width - (this.properties.padding * 2)) / btn.width;
     wscale = 1;
@@ -87,8 +95,15 @@ OgrePrototype.Menu.prototype.addButton = function (x, y, label, callbackFnc, cal
     
     btn.scale.setTo(wscale, hscale);
     btn.anchor.setTo(0.5,0.5);
-    btn.x = btn.width / 2 + (this.properties.padding + this.properties.spacing + this.properties.topOffset + btn.width) * this.numOfButtons;
-    btn.y = btn.height / 2 + this.properties.padding + this.properties.leftOffset;
+
+    if (this.properties.orientation === 'horizontal') {
+        btn.x = Math.floor(btn.width *  0.5) + (this.properties.padding + this.properties.spacing + this.properties.leftOffset + btn.width) * this.numOfButtons;
+        btn.y = Math.floor(btn.height * 0.5) + this.properties.padding + this.properties.topOffset;
+    } else {
+        btn.x = Math.floor(btn.width * 0.5) + this.properties.padding + this.properties.leftOffset;
+        btn.y = Math.floor(btn.height * 0.5) + (this.properties.padding + this.properties.spacing + this.properties.topOffset + btn.height) * this.numOfButtons;
+    }
+
     
     text = this.game.add.text(0, 0, label, style);
     text.anchor.setTo(0.5,0.5);

@@ -5,41 +5,40 @@ OgrePrototype.Game = function (game) {
     
     this.se = {};
     
-    this.map;
-    this.layer_terrain;
-    this.layer_locations;
-    this.cursors;
+    this.map = null;
+    this.layer_terrain = null;
+    this.cursors = null;
 
-    this.castleGroup;
+    this.castleGroup = null;
     
-    this.foeParties;
-    this.playerParties;
-    this.neutralParties;
+    this.foeParties = null;
+    this.playerParties = null;
+    this.neutralParties = null;
     
-    this.playerPartySelected;
-    this.playerCastleSelected;
+    this.playerPartySelected = null;
+    this.playerCastleSelected = null;
     
-    this.selectedPartyMenu;
-    this.selectedCastleMenu;
-    this.mainMenu;
-    this.castleStatus;
+    this.selectedPartyMenu = null;
+    this.selectedCastleMenu = null;
+    this.mainMenu = null;
+    this.castleStatus = null;
     
-    this.selectedIndicator;
-    this.HUD;
+    this.selectedIndicator = null;
+    this.HUD = null;
     
-    this.battleMessage;
+    this.battleMessage = null;
     
     this.mytweens = [];
     this.exclamations = [];
     
-    this.nightOverlay;
-    this.day;
-    this.month;
-    this.year;
+    this.nightOverlay = null;
+    this.day = null;
+    this.month = null;
+    this.year = null;
     
     // ----
     this.castlesOwned = 0;  // should probably be in the Player class
-    this.player;
+    this.player = null;
 };
 
 OgrePrototype.Game.prototype = {
@@ -97,7 +96,7 @@ OgrePrototype.Game.prototype = {
         this.createNightOverlay();
         
         this.selectedIndicator = this.game.add.sprite(0, 0, 'down-arrow');
-        this.selectedIndicator.scale.setTo(0.5,0.5);
+        //this.selectedIndicator.scale.setTo(0.5,0.5);
         this.selectedIndicator.anchor.setTo(0.5,0.5);
         this.selectedIndicator.visible = false;
         this.selectedIndicator.animations.add('idle', [0,1,2,1], 1000, true);
@@ -120,6 +119,7 @@ OgrePrototype.Game.prototype = {
         this.createMainMenu();
         this.createOneCastleMenu();
         this.createOnePartyMenu();
+        this.createRecruitMenu();
         
         /* ** Handle Scrolling of the map via mouse & touch drag ** */
         // http://www.html5gamedevs.com/topic/6351-dragging-a-tilesprite/#entry37979
@@ -240,8 +240,11 @@ OgrePrototype.Game.prototype = {
         this.playerPartySelected = null;
         
         this.selectedPartyMenu.destroy();
+        this.selectedCastleMenu.destroy();
         this.HUD.destroy();
         this.castleStatus.destroy();
+        this.recruitMenu.destroy();
+        this.mainMenu.destroy();
         
         this.nightOverlay.destroy();
         
@@ -310,7 +313,7 @@ OgrePrototype.Game.prototype = {
             this.neutralParties.add(party);
         }
     },
-    
+    /*
     maybeCreateCastle : function (tile) {
         var castle, coords;
         if (tile.index >= 0) {
@@ -323,7 +326,7 @@ OgrePrototype.Game.prototype = {
             castle.events.onCastleSelected.add(this.handleCastleSelect, this);
         }
     },
-    
+    */
     givePlayerCastle : function () {
         // select random castle for player
         var castle = this.castleGroup.getRandom(),
@@ -351,7 +354,7 @@ OgrePrototype.Game.prototype = {
     },
     
     partiesCollide : function (PartyOne, PartyTwo) {
-        var i, fidx, jidx, roll, p1, p2;
+        var i, roll, p1, p2;
         // if partytwo is neutral, they join the other party's faction
         if (PartyTwo.properties.faction === 2) {
             PartyTwo.properties.faction = PartyOne.properties.faction;
@@ -421,8 +424,7 @@ OgrePrototype.Game.prototype = {
         this.month = this.game.rnd.integerInRange(1, OgrePrototype.calendar.monthsPerYear);
         this.year = this.game.rnd.integerInRange(100, 500);
         
-        console.log(this.time);
-        this.time.events.loop(Phaser.Timer.MINUTE * 2, function () {
+        this.time.events.loop(Phaser.Timer.MINUTE, function () {
             this.day += 1;
             
             if (this.day > OgrePrototype.calendar.daysPerMonth) {
@@ -434,7 +436,7 @@ OgrePrototype.Game.prototype = {
                     this.year += 1;
                 }
             }
-            
+            this.onNewDay();
             this.calendar.setText(this.day + 'th day of ' + OgrePrototype.calendar.months[this.month] + ', year ' + this.year);
         }, this);
     },
@@ -452,7 +454,7 @@ OgrePrototype.Game.prototype = {
         
         this.nightOverlay.alpha = 0.75;
         
-        this.dayNightTween = this.game.add.tween(this.nightOverlay).to({alpha:0}, Phaser.Timer.MINUTE, Phaser.Easing.Linear.None, true, 0, Number.MAX_VALUE, true);
+        this.dayNightTween = this.game.add.tween(this.nightOverlay).to({alpha:0}, Phaser.Timer.SECOND * 30, Phaser.Easing.Linear.None, true, 0, Number.MAX_VALUE, true);
     },
     
     createHUD : function () {
@@ -479,7 +481,15 @@ OgrePrototype.Game.prototype = {
         this.menubtn = this.game.add.button(32, this.game.camera.screenView.height - 80, 'btn-menu', this.toggleMainMenu, this, 1, 0, 1, 0);
         this.HUD.add(this.menubtn);
         
-        this.castlebtn = this.game.add.button((32 + 102) * 2, this.game.camera.screenView.height - 80, 'btn-castle', this.closeCastleStatus, this, 1, 0, 1, 0);
+        this.castlebtn = this.game.add.button((32 + 102) * 2, this.game.camera.screenView.height - 80, 'btn-castle', function () {
+            if (this.castleStatus.visible) {
+                this.closeCastleStatus(false);
+            }
+
+            if (this.recruitMenu.visible) {
+                this.recruitMenu.hide();
+            }
+        }, this, 1, 0, 1, 0);
         this.HUD.add(this.castlebtn);
         
         this.partybtn = this.game.add.button((32 + 102) * 3 , this.game.camera.screenView.height - 80, 'btn-party', 
@@ -670,13 +680,27 @@ OgrePrototype.Game.prototype = {
         
         // buttons are initially null until the menu is attached to a party
         this.selectedCastleMenu.addButton(0, 0, '', null, this, 52, 48, 52, 48, {key: 'deploy'});
-        this.selectedCastleMenu.addButton(0, 0, '', null, this, 28, 24, 28, 24, {key: 'recruit'});
+        this.selectedCastleMenu.addButton(0, 0, '', function () {
+            if (this.castleStatus.visible) {
+                this.closeCastleStatus(false, this.recruitMenu.show, this.recruitMenu);
+            } else {
+                this.recruitMenu.show();
+            }
+
+
+            //this.recruitMenu.show();
+        }, this, 28, 24, 28, 24, {key: 'recruit'});
         this.selectedCastleMenu.addButton(0, 0, '', null, this, 36, 32, 36, 32, {key: 'repair'});
         this.selectedCastleMenu.addButton(0, 0, '', null, this, 21, 17, 21, 17, {key: 'shop'});
         //this.selectedCastleMenu.addButton(0, 0, '', this.selectedCastleMenu.hide, this.selectedCastleMenu, 20, 16, 20, 16, {key: 'cancel'});
         this.selectedCastleMenu.addButton(0, 0, '', function () {
-            this.playerCastleSelected.removeChild(this.selectedIndicator);
-            this.closeCastleStatus();
+            //this.playerCastleSelected.removeChild(this.selectedIndicator);
+            this.closeCastleStatus(true);
+
+            if (this.recruitMenu.visible) {
+                this.recruitMenu.hide();
+            }
+            //this.playerCastleSelected
             /*
             this.playerCastleSelected = undefined;
             this.selectedCastleMenu.hide();
@@ -738,20 +762,48 @@ OgrePrototype.Game.prototype = {
             if (window.confirm('Are you sure you want to quit?')) {
                 this.endGameTransition('TitleMenu', 1);
                 //this.state.start('TitleMenu');
-            };
+            }
         }, this, 44, 40, 44, 40, {key: 'quit'});
         this.mainMenu.addButton(0, 0, '', this.mainMenu.hide, this.mainMenu, 20, 16, 20, 16, {key: 'cancel'});
     },
-    
-    closeCastleStatus : function () {
+
+    createRecruitMenu : function () {
+        this.recruitMenu = new OgrePrototype.Menu(
+            this.game,
+            this.game.world, {
+                width: 192,
+                height: 276,
+                spacing: 5,
+                orientation: 'vertical',
+                x: this.castlebtn.x,
+                y: this.camera.screenView.height - 350
+        });
+
+        this.recruitMenu.addButton(0, 0, 'fighter', null, this, 1, 0, 1, 0, {key: 'fighter', imgsrc: 'btn-units'});
+        this.recruitMenu.addButton(0, 0, 'scout', null, this, 3, 2, 3, 2, {key: 'scout', imgsrc: 'btn-units'});
+        this.recruitMenu.addButton(0, 0, 'acolyte', null, this, 5, 4, 5, 4, {key: 'acolyte', imgsrc: 'btn-units'});
+        this.recruitMenu.addButton(0, 0, 'mage', null, this, 7, 6, 7, 6, {key: 'mage', imgsrc: 'btn-units'});
+    },
+
+    closeCastleStatus : function (closeCastleMenu, callback, callbackContext, callbackArgs) {
         var castleScreen = this.castleStatus;
         var tween = this.game.add.tween(this.castleStatus.cameraOffset).to({y:this.game.camera.screenView.height}, 2000, Phaser.Easing.Linear.None, true);
         tween.onComplete.add(function () {
             castleScreen.visible = false;
+
+            if (callback) {
+                if (callbackArgs) {
+                    console.log(callback);
+                    callback.call(callbackContext, this, callbackArgs);
+                } else {
+                    callback.call(callbackContext, this);
+                }
+            }
         });
         this.mytweens.push(tween);
         
-        if (this.playerSelectedCastle) {
+        if (closeCastleMenu && this.playerCastleSelected) {
+            console.log('playerSelectedCastle NOT null');
             this.playerCastleSelected.removeChild(this.selectedIndicator);
             this.playerCastleSelected = undefined;
             this.selectedCastleMenu.hide();
@@ -794,7 +846,7 @@ OgrePrototype.Game.prototype = {
     showExclam : function (fromEntity, key, sound, offsetX, offsetY) {
         var x = fromEntity.x, 
             y = fromEntity.y,
-            i = 0, exclamation;
+            i, exclamation;
         
         if (offsetX) {
             x += offsetX;
@@ -841,6 +893,19 @@ OgrePrototype.Game.prototype = {
     handlePartyFinishedMoving : function (party) {
         console.log('party finished move signal received');
         this.game.physics.arcade.overlap(party, this.castleGroup, this.conquerCastle, this.partyOnCastle, this);
+    },
+
+    onNewDay : function () {
+        // increase the player's gold by the sum of incomes from all castles they own
+        // this should probably be handled elsewhere, but for now lets put it here.
+        //var income;
+
+        this.castleGroup.forEach(function (castle) {
+            if (castle.properties.faction === 0) {
+                this.player.gold += castle.properties.gold;
+                console.log(' Player gained ' + castle.properties.gold + ' gold');
+            }
+        }, this);
     },
     
     endGameTransition : function (key, time) {

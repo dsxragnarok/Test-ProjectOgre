@@ -24,7 +24,7 @@ OgrePrototype.Preloader.prototype = {
         //this.load.image('castle', '/tests/assets/CastleRed.png');
         
         this.load.spritesheet('castles', 'assets/castles.png', 64,64);
-        this.load.spritesheet('icons-units', 'assets/ogre-battle-unit-icons.png', 20, 20);
+        this.load.spritesheet('icons-units', 'assets/scaled-ogre-battle-unit-icons.png', 32, 32);
         this.load.spritesheet('arthur-victor', 'assets/arthur-victorious.png', 56, 124);
         this.load.spritesheet('arthur-flag', 'assets/arthur-flag.png', 119, 113);
         this.load.spritesheet('classes-standing', 'assets/classes-stand.png', 56, 80);
@@ -38,7 +38,9 @@ OgrePrototype.Preloader.prototype = {
         
         this.load.image('main-title-bg', 'assets/title-bg.png', 1024, 768);
         this.load.image('end-title-bg', 'assets/title2-bg.png', 1024, 768);
-        
+
+        this.load.spritesheet('btn-units', 'assets/unit-buttons.png', 96, 64);
+
         this.load.spritesheet('btn-menu', 'assets/btn-menu-102x38.png', 102, 38);
         this.load.spritesheet('btn-castle', 'assets/btn-castle-102x38.png', 102, 38);
         this.load.spritesheet('btn-party', 'assets/btn-party-102x38.png', 102, 38);

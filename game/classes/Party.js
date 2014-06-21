@@ -23,7 +23,7 @@ OgrePrototype.Party = function (game, x, y, faction, icon) {
     Phaser.Sprite.call(this, game, x, y, 'icons-units', frameIdx);
     this.name = 'party';
     
-    this.scale.setTo(1.6,1.6);     // 1/0.625 = 1.6 ->  20 * 1.6 = 32
+    //this.scale.setTo(1.6,1.6);     // 1/0.625 = 1.6 ->  20 * 1.6 = 32
     this.anchor.setTo(0.5,0.5);
     
     this.events.onPartySelected = new Phaser.Signal();
