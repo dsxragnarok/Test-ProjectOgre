@@ -46,12 +46,13 @@ OgrePrototype.Game.prototype = {
         var canvas = window.document.getElementsByTagName('canvas')[0],
             prevX = 0,
             prevY = 0,
-            mouseDown = false;
+            mouseDown = false,
+            startTween;
             
         this.stage.backgroundColor = '#787878';
         
         this.music = this.add.audio('march');
-        this.music.play('',0,0.3,true);
+        //this.music.play('',0,0.3,true);
         
         this.se.fightitout = this.add.audio('fightitout');
         this.se.liberated = this.add.audio('liberated');
@@ -59,13 +60,11 @@ OgrePrototype.Game.prototype = {
         this.map = this.game.add.tilemap('map');
         this.map.addTilesetImage('pogre-sample-tileset', 'tiles');
         this.layer_terrain = this.map.createLayer('terrain');
-        //this.layer_locations = this.map.createLayer('locations');
-        
+
         this.cursors = this.game.input.keyboard.createCursorKeys();
         
         this.layer_terrain.resizeWorld();
-        //this.layer_locations.resizeWorld();
-        
+
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
         this.castleGroup = this.game.add.group();
@@ -80,8 +79,6 @@ OgrePrototype.Game.prototype = {
         this.playerParties.enableBody = true;
         
         this.map.createFromObjects('Object Layer 1', 15, 'castles', 0, true, false, this.castleGroup, OgrePrototype.Castle);
-        /* test creating castle sprites */
-        //this.map.forEach(this.maybeCreateCastle, this, 0, 0, this.map.width, this.map.height, 'locations');
         this.castleGroup.forEach(function (castle) {
             castle.setProperties({});
             castle.events.onCastleSelected.add(this.handleCastleSelect, this);
@@ -89,38 +86,33 @@ OgrePrototype.Game.prototype = {
         
         this.player = new OgrePrototype.Player(this.game);
         
-        this.givePlayerCastle();
+        startTween = this.givePlayerCastle();
         this.spawnParties();
         
         this.startTimeTracker();
         this.createNightOverlay();
         
         this.selectedIndicator = this.game.add.sprite(0, 0, 'down-arrow');
-        //this.selectedIndicator.scale.setTo(0.5,0.5);
         this.selectedIndicator.anchor.setTo(0.5,0.5);
         this.selectedIndicator.visible = false;
         this.selectedIndicator.animations.add('idle', [0,1,2,1], 1000, true);
         
-        //this.exclamations = this.game.add.sprite(0, 0, 'exclamations');
         this.exclamations[0] = this.game.add.sprite(0, 0, 'exclamations');
         this.exclamations[0].visible = false;
-        /*
-        this.fightitout = this.game.add.sprite(0, 0, 'exclamations', 1);
-        this.fightitout.visible = false;
-        
-        this.liberation = this.game.add.sprite(0, 0, 'exclamations', 4);
-        this.liberation.visible = false;
-        */
 
         this.createOneCastleStatusScreen();        
         this.createHUD();
         
-        //this.selectedPartyMenu = this.createOnePartyMenu();
         this.createMainMenu();
         this.createOneCastleMenu();
         this.createOnePartyMenu();
         this.createRecruitMenu();
-        
+
+        this.game.ScreenTransition.fadeIn(function () {
+            this.music.play('',0,0.3,true);
+            startTween.start();
+        }, this);
+
         /* ** Handle Scrolling of the map via mouse & touch drag ** */
         // http://www.html5gamedevs.com/topic/6351-dragging-a-tilesprite/#entry37979
         // http://www.html5gamedevs.com/topic/2410-drag-the-camera/
@@ -226,7 +218,6 @@ OgrePrototype.Game.prototype = {
     
         this.map.destroy();
         this.layer_terrain.destroy();
-        //this.layer_locations.destroy();
         this.cursors = null;
         this.selectedIndicator.destroy();
         
@@ -281,7 +272,6 @@ OgrePrototype.Game.prototype = {
     },
     
     spawnParties : function () {
-        //this.map.forEach(this.maybeCreateCastle, this, 0, 0, this.map.width, this.map.height, 'locations');
         this.castleGroup.forEach(this.spawnParty, this);
     },
     
@@ -312,20 +302,7 @@ OgrePrototype.Game.prototype = {
             this.neutralParties.add(party);
         }
     },
-    /*
-    maybeCreateCastle : function (tile) {
-        var castle, coords;
-        if (tile.index >= 0) {
-            coords = this.tileToWorldCoordinates(tile.x, tile.y);
-            castle = new OgrePrototype.Castle(this.game, coords.x, coords.y, 'castles', 0, {label:'Castle-' + tile.x + ':' + tile.y});
-            
-            this.game.add.existing(castle);
-            this.castleGroup.add(castle);
-            
-            castle.events.onCastleSelected.add(this.handleCastleSelect, this);
-        }
-    },
-    */
+
     givePlayerCastle : function () {
         // select random castle for player
         var castle = this.castleGroup.getRandom(),
@@ -335,12 +312,12 @@ OgrePrototype.Game.prototype = {
         castle.frame = 1;
         // center camera on player
         this.castlesOwned += 1;
-        this.mytweens.push(this.game.add.tween(this.game.camera).to({x:castle.x-this.game.camera.screenView.width/2,y:castle.y-this.game.camera.screenView.height/2}, speed, Phaser.Easing.Linear.None, true));
+        this.mytweens.push(this.game.add.tween(this.game.camera).to({x:castle.x-this.game.camera.screenView.width/2,y:castle.y-this.game.camera.screenView.height/2}, speed));//, Phaser.Easing.Linear.None, true));
+
+        return this.mytweens[this.mytweens.length-1];
     },
     
     partyOnCastle : function (party, castle) {
-        //console.log(party);
-        //console.log(castle);
         return party.properties.faction !== castle.properties.faction;
     },
     
@@ -951,7 +928,10 @@ OgrePrototype.Game.prototype = {
     endGameTransition : function (key, time) {
         var t = time || 3;
         this.game.time.events.add(Phaser.Timer.SECOND * t, function () {
-            this.game.StateTransitions.to(key);
+            this.game.ScreenTransition.fade(0, 1, Phaser.Timer.SECOND * t, function () {
+                this.state.start(key);
+            }, this);
+            //this.game.StateTransitions.to(key);
         }, this);
     }
 };

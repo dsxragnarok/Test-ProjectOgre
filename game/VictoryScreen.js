@@ -63,8 +63,12 @@ OgrePrototype.VictoryScreen.prototype = {
         this.btn.scale.setTo(1,1);
         this.btn.anchor.setTo(0.5,0.5);
         this.btn.addChild(text);
-        
-        this.victor.animations.play('victorious', 1, false);
+
+        this.game.ScreenTransition.fade(1, 0, 1500, function () {
+            "use strict";
+            this.victor.animations.play('victorious', 1, false);
+        }, this);
+
     },
     
     shutdown : function () {
@@ -80,7 +84,11 @@ OgrePrototype.VictoryScreen.prototype = {
     },
     
     menuButton : function () {
-        this.game.StateTransitions.to('TitleMenu');
+        this.game.ScreenTransition.fade(0, 1, 1500, function () {
+            "use strict";
+            this.state.start('TitleMenu');
+        }, this);
+        //this.game.StateTransitions.to('TitleMenu');
         //this.state.start('TitleMenu');
     }
 };

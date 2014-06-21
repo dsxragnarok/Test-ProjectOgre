@@ -22,7 +22,7 @@ OgrePrototype.TitleMenu.prototype = {
         var text, btn, bghscale, bgwscale, bmd, instrbg;
       
         this.music = this.add.audio('title-music');
-        this.music.play('',0,0.3,false);
+        //this.music.play('',0,0.3,false);
         
         this.game.world.setBounds(0, 0, 1024, 768);
           
@@ -132,6 +132,10 @@ OgrePrototype.TitleMenu.prototype = {
         this.InstructionScreen.add(btn);
         
         this.InstructionScreen.visible = false;
+
+        this.game.ScreenTransition.fade(1, 0, 1500, function () {
+            this.music.play('',0,0.3,false);
+        }, this);
     },
     
     shutdown : function () {
@@ -150,8 +154,11 @@ OgrePrototype.TitleMenu.prototype = {
     /* ********************************************************************** */
     
     playGame : function () {
-        this.music.stop();
-        this.game.StateTransitions.to('Game');
+        this.game.ScreenTransition.fade(0, 1, 3000, function () {
+            this.music.stop();
+            this.state.start('Game');
+        }, this);
+        //this.game.StateTransitions.to('Game');
         //this.state.start('Game');
     },
     

@@ -58,7 +58,7 @@ OgrePrototype.Preloader.prototype = {
     },
     
     create : function () {
-        this.game.StateTransitions = this.game.plugins.add(Phaser.Plugin.StateTransition);
+        /*this.game.StateTransitions = this.game.plugins.add(Phaser.Plugin.StateTransition);
         this.game.StateTransitions.settings({
             duration : 500,
             properties : {
@@ -68,7 +68,9 @@ OgrePrototype.Preloader.prototype = {
                     y : 1.5
                 }
             }
-        });
+        });*/
+        this.game.ScreenTransition = new OgrePrototype.ScreenTransition(this.game, this.game.camera.screenView.width, this.game.camera.screenView.height);
+
         this.preloadBar.cropEnabled = false;
     },
     
