@@ -38,7 +38,7 @@ OgrePrototype.Menu.prototype.hide = function () {
 
 OgrePrototype.Menu.prototype.show = function (options) {
     var x,y;
-    console.log(this);
+    //console.log(this);
     if (options) {
         if (options.fixedToCamera !== undefined && options.fixedToCamera !== null) {
             this.fixedToCamera = options.fixedToCamera;
@@ -58,7 +58,7 @@ OgrePrototype.Menu.prototype.show = function (options) {
         this.x = x;
         this.y = y;
     }
-    console.log(this.x + " - " + this.y + ' ~ ' + this.fixedToCamera);
+    //console.log(this.x + " - " + this.y + ' ~ ' + this.fixedToCamera);
     this.visible = true;
 };
 

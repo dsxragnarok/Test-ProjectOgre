@@ -206,15 +206,14 @@ OgrePrototype.Game.prototype = {
         if (OgrePrototype.debug) {
             this.game.debug.pointer(this.game.input.activePointer);
             this.game.debug.cameraInfo(this.game.camera, 32, 32);
-        
+            this.game.debug.text('Time until next day: ' + this.game.time.events.duration, 8, 40);
+
             if (this.playerPartySelected) {
                 this.game.debug.text('Selected Party: ' + 
                     OgrePrototype.factions[this.playerPartySelected.properties.faction] + '-' + 
                     OgrePrototype.jobs[this.playerPartySelected.properties.leader], 360, 32, 'rgb(255,0,255)');
             }
         }
-        
-        this.game.debug.text('Time until next day: ' + this.game.time.events.duration, 8, 40);
     },
     
     shutdown : function () {
@@ -291,8 +290,8 @@ OgrePrototype.Game.prototype = {
         
         // game, x, y, faction, icon
         party = new OgrePrototype.Party(this.game, 
-                    castle.x + castle.width/2,
-                    castle.y + castle.height/2,
+                    castle.x + Math.floor(castle.width * 0.5),
+                    castle.y + Math.floor(castle.height * 0.5),
                     castle.properties.faction,
                     this.game.rnd.integerInRange(0, OgrePrototype.jobs.length-1)
                 );
@@ -340,8 +339,8 @@ OgrePrototype.Game.prototype = {
     },
     
     partyOnCastle : function (party, castle) {
-        console.log(party);
-        console.log(castle);
+        //console.log(party);
+        //console.log(castle);
         return party.properties.faction !== castle.properties.faction;
     },
     
@@ -350,7 +349,7 @@ OgrePrototype.Game.prototype = {
         castle.frame = 1;
         this.showExclam(castle, 'liberation', this.se.liberated, 32, -32);
         this.castlesOwned += 1;
-        console.log('You\'ve conquered this castle!');
+        //console.log('You\'ve conquered this castle!');
     },
     
     partiesCollide : function (PartyOne, PartyTwo) {
@@ -400,18 +399,18 @@ OgrePrototype.Game.prototype = {
             if (p1 === p2 || (p1 === 'fighter' && p2 === 'scout') || (p1 === 'scout' && p2 === 'fighter') ||
                 (p1 === 'acolyte' && p2 === 'mage') || (p1 === 'mage' && p2 === 'acolyte')) {
                 if (roll >= 50) {
-                    console.log('player clashes with foe ~ wins : ' + roll);
+                    //console.log('player clashes with foe ~ wins : ' + roll);
                     PartyTwo.kill();
                 } else {
-                    console.log('player clashes with foe ~ loses : ' + roll);
+                    //console.log('player clashes with foe ~ loses : ' + roll);
                     PartyOne.kill();
                 }
             } else if ((p1 === 'fighter' && p2 === 'acolyte') || (p1 === 'acolyte' && p2 === 'scout') || 
                         (p1 === 'mage' && p2 === 'fighter') || (p1 === 'scout' && p2 === 'mage')) {
-                console.log('player clashes with foe ~ wins : ' + p1 + ' > ' + p2);
+                //console.log('player clashes with foe ~ wins : ' + p1 + ' > ' + p2);
                 PartyTwo.kill();
             } else {
-                console.log('player clashes with foe ~ loses : ' + p2 + ' > ' + p1);
+                //console.log('player clashes with foe ~ loses : ' + p2 + ' > ' + p1);
                 PartyOne.kill();
             }
         }
@@ -566,10 +565,10 @@ OgrePrototype.Game.prototype = {
         this.castleStatus.add(label);
         
         this.castleStatus.updateInformation = function (info) {
-            console.log('called castle status update information function');
+            //console.log('called castle status update information function');
             this.forEach(function (child) {
-                console.log('status child');
-                console.log(child);
+                //console.log('status child');
+                //console.log(child);
                 if (child.name === 'label') {
                     child.setText(info.human_label);
                 }
@@ -654,7 +653,7 @@ OgrePrototype.Game.prototype = {
     /*
     handlePartyDeselect : function (party) {
         if (OgrePrototype.factions[party.properties.faction] === 'player') {
-            console.log( ' received deselect signal for player party' );
+            //console.log( ' received deselect signal for player party' );
             this.selectedPartyMenu.clearButtonHandle('move');
             this.selectedPartyMenu.clearButtonHandle('cancel');
             
@@ -779,10 +778,18 @@ OgrePrototype.Game.prototype = {
                 y: this.camera.screenView.height - 350
         });
 
-        this.recruitMenu.addButton(0, 0, 'fighter', null, this, 1, 0, 1, 0, {key: 'fighter', imgsrc: 'btn-units'});
-        this.recruitMenu.addButton(0, 0, 'scout', null, this, 3, 2, 3, 2, {key: 'scout', imgsrc: 'btn-units'});
-        this.recruitMenu.addButton(0, 0, 'acolyte', null, this, 5, 4, 5, 4, {key: 'acolyte', imgsrc: 'btn-units'});
-        this.recruitMenu.addButton(0, 0, 'mage', null, this, 7, 6, 7, 6, {key: 'mage', imgsrc: 'btn-units'});
+        this.recruitMenu.addButton(0, 0, 'fighter', function () {
+            this.handleRecruitUnit(0);
+        }, this, 1, 0, 1, 0, {key: 'fighter', imgsrc: 'btn-units'});
+        this.recruitMenu.addButton(0, 0, 'scout', function () {
+            this.handleRecruitUnit(1);
+        }, this, 3, 2, 3, 2, {key: 'scout', imgsrc: 'btn-units'});
+        this.recruitMenu.addButton(0, 0, 'acolyte', function () {
+            this.handleRecruitUnit(2);
+        }, this, 5, 4, 5, 4, {key: 'acolyte', imgsrc: 'btn-units'});
+        this.recruitMenu.addButton(0, 0, 'mage', function () {
+            this.handleRecruitUnit(3);
+        }, this, 7, 6, 7, 6, {key: 'mage', imgsrc: 'btn-units'});
     },
 
     closeCastleStatus : function (closeCastleMenu, callback, callbackContext, callbackArgs) {
@@ -793,7 +800,7 @@ OgrePrototype.Game.prototype = {
 
             if (callback) {
                 if (callbackArgs) {
-                    console.log(callback);
+                    //console.log(callback);
                     callback.call(callbackContext, this, callbackArgs);
                 } else {
                     callback.call(callbackContext, this);
@@ -803,7 +810,7 @@ OgrePrototype.Game.prototype = {
         this.mytweens.push(tween);
         
         if (closeCastleMenu && this.playerCastleSelected) {
-            console.log('playerSelectedCastle NOT null');
+            //console.log('playerSelectedCastle NOT null');
             this.playerCastleSelected.removeChild(this.selectedIndicator);
             this.playerCastleSelected = undefined;
             this.selectedCastleMenu.hide();
@@ -891,8 +898,41 @@ OgrePrototype.Game.prototype = {
     },
     
     handlePartyFinishedMoving : function (party) {
-        console.log('party finished move signal received');
+        //console.log('party finished move signal received');
         this.game.physics.arcade.overlap(party, this.castleGroup, this.conquerCastle, this.partyOnCastle, this);
+    },
+
+    handleRecruitUnit : function (unitIdx) {
+        var unit, x, y;
+
+        if (this.player.gold >= 250) {
+            unit = this.playerParties.getFirstDead();
+
+            x = this.playerCastleSelected.x + Math.floor(this.playerCastleSelected.width * 0.5);
+            y = this.playerCastleSelected.y + Math.floor(this.playerCastleSelected.height * 0.5);
+
+            if (unit === null) {
+                unit = new OgrePrototype.Party(this.game, x, y, 0, unitIdx);
+
+                this.game.add.existing(unit);
+                this.playerParties.add(unit);
+
+                unit.events.onPartySelected.add(this.handlePartySelect, this);
+                unit.events.onPartyMoveSelect.add(this.handlePartyMoveSelect, this);
+                unit.events.onKilled.add(this.handlePartyKilled, this);
+                unit.events.onPartyMoveEnd.add(this.handlePartyFinishedMoving, this);
+            } else {
+                unit.properties.leader = unitIdx;
+                unit.frame = unit.properties.faction * OgrePrototype.jobs.length + unitIdx;
+                unit.reset(x,y,100);
+
+                unit.isMoving = false;
+                unit.tween = null;
+            }
+
+            console.log('Player recruited ' + OgrePrototype.jobs[unitIdx] + ' for ' + 250 + ' gold');
+            this.player.gold -= 250;
+        }
     },
 
     onNewDay : function () {
