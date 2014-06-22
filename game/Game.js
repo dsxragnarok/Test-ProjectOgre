@@ -655,8 +655,8 @@ OgrePrototype.Game.prototype = {
         this.game.add.existing(this.selectedCastleMenu);
         
         // buttons are initially null until the menu is attached to a party
-        this.selectedCastleMenu.addButton(0, 0, '', null, this, 52, 48, 52, 48, {key: 'deploy'});
-        this.selectedCastleMenu.addButton(0, 0, '', function () {
+        //this.selectedCastleMenu.addButton(0, 0, '', null, this, 52, 48, 52, 48, {key: 'deploy'});
+        this.selectedCastleMenu.addButton(0, 0, 'recruit', function () {
             if (this.castleStatus.visible) {
                 this.closeCastleStatus(false, this.recruitMenu.show, this.recruitMenu);
             } else {
@@ -666,10 +666,10 @@ OgrePrototype.Game.prototype = {
 
             //this.recruitMenu.show();
         }, this, 28, 24, 28, 24, {key: 'recruit'});
-        this.selectedCastleMenu.addButton(0, 0, '', null, this, 36, 32, 36, 32, {key: 'repair'});
-        this.selectedCastleMenu.addButton(0, 0, '', null, this, 21, 17, 21, 17, {key: 'shop'});
+        //this.selectedCastleMenu.addButton(0, 0, '', null, this, 36, 32, 36, 32, {key: 'repair'});
+        //this.selectedCastleMenu.addButton(0, 0, '', null, this, 21, 17, 21, 17, {key: 'shop'});
         //this.selectedCastleMenu.addButton(0, 0, '', this.selectedCastleMenu.hide, this.selectedCastleMenu, 20, 16, 20, 16, {key: 'cancel'});
-        this.selectedCastleMenu.addButton(0, 0, '', function () {
+        this.selectedCastleMenu.addButton(0, 0, 'cancel', function () {
             //this.playerCastleSelected.removeChild(this.selectedIndicator);
             this.closeCastleStatus(true);
 
@@ -729,17 +729,17 @@ OgrePrototype.Game.prototype = {
                         });
         this.game.add.existing(this.mainMenu);
         
-        this.mainMenu.addButton(0, 0, '', null, this, 22, 18, 22, 18, {key: 'castles'});
-        this.mainMenu.addButton(0, 0, '', null, this, 46, 42, 46, 42, {key: 'parties'});
-        this.mainMenu.addButton(0, 0, '', null, this, 52, 48, 52, 48, {key: 'deploy'});
-        this.mainMenu.addButton(0, 0, '', null, this, 29, 25, 29, 25, {key: 'objective'});
-        this.mainMenu.addButton(0, 0, '', null, this, 39, 35, 39, 35, {key: 'settings'});
-        this.mainMenu.addButton(0, 0, '', function () {
+        //this.mainMenu.addButton(0, 0, '', null, this, 22, 18, 22, 18, {key: 'castles'});
+        //this.mainMenu.addButton(0, 0, '', null, this, 46, 42, 46, 42, {key: 'parties'});
+        //this.mainMenu.addButton(0, 0, '', null, this, 52, 48, 52, 48, {key: 'deploy'});
+        //this.mainMenu.addButton(0, 0, '', null, this, 29, 25, 29, 25, {key: 'objective'});
+        //this.mainMenu.addButton(0, 0, '', null, this, 39, 35, 39, 35, {key: 'settings'});
+        this.mainMenu.addButton(0, 0, 'quit', function () {
             if (window.confirm('Are you sure you want to quit?')) {
                 this.endGameTransition('TitleMenu', 1);
             }
         }, this, 44, 40, 44, 40, {key: 'quit'});
-        this.mainMenu.addButton(0, 0, '', this.mainMenu.hide, this.mainMenu, 20, 16, 20, 16, {key: 'cancel'});
+        this.mainMenu.addButton(0, 0, 'cancel', this.mainMenu.hide, this.mainMenu, 20, 16, 20, 16, {key: 'cancel'});
     },
 
     createRecruitMenu : function () {
