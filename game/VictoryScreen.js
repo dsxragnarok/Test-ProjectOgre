@@ -88,7 +88,5 @@ OgrePrototype.VictoryScreen.prototype = {
             "use strict";
             this.state.start('TitleMenu');
         }, this);
-        //this.game.StateTransitions.to('TitleMenu');
-        //this.state.start('TitleMenu');
     }
 };

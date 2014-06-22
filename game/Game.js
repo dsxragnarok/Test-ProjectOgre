@@ -737,7 +737,6 @@ OgrePrototype.Game.prototype = {
         this.mainMenu.addButton(0, 0, '', function () {
             if (window.confirm('Are you sure you want to quit?')) {
                 this.endGameTransition('TitleMenu', 1);
-                //this.state.start('TitleMenu');
             }
         }, this, 44, 40, 44, 40, {key: 'quit'});
         this.mainMenu.addButton(0, 0, '', this.mainMenu.hide, this.mainMenu, 20, 16, 20, 16, {key: 'cancel'});
@@ -931,7 +930,6 @@ OgrePrototype.Game.prototype = {
             this.game.ScreenTransition.fade(0, 1, Phaser.Timer.SECOND * t, function () {
                 this.state.start(key);
             }, this);
-            //this.game.StateTransitions.to(key);
         }, this);
     }
 };
