@@ -58,8 +58,9 @@ OgrePrototype.Game.prototype = {
         this.se.liberated = this.add.audio('liberated');
         
         this.map = this.game.add.tilemap('map');
-        this.map.addTilesetImage('pogre-sample-tileset', 'tiles');
-        this.layer_terrain = this.map.createLayer('terrain');
+
+        this.map.addTilesetImage('set_0', 'tiles');
+        this.layer_terrain = this.map.createLayer('Tile Layer 1');
 
         this.cursors = this.game.input.keyboard.createCursorKeys();
         
@@ -78,7 +79,8 @@ OgrePrototype.Game.prototype = {
         this.neutralParties.enableBody = true;
         this.playerParties.enableBody = true;
         
-        this.map.createFromObjects('Object Layer 1', 15, 'castles', 0, true, false, this.castleGroup, OgrePrototype.Castle);
+        this.map.createFromObjects('Object Layer 1', 143, 'castle1', 0, true, false, this.castleGroup, OgrePrototype.Castle);
+        this.map.createFromObjects('Object Layer 1', 162, 'castle2', 0, true, false, this.castleGroup, OgrePrototype.Castle);
         this.castleGroup.forEach(function (castle) {
             castle.setProperties({});
             castle.events.onCastleSelected.add(this.handleCastleSelect, this);

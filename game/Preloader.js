@@ -18,12 +18,12 @@ OgrePrototype.Preloader.prototype = {
 
         this.load.spritesheet('buttonhorizontal', 'assets/button-horizontal.png', 96, 64);
         this.load.spritesheet('flixelbutton', 'assets/flixel-button.png', 80, 20);
-    
-        this.load.tilemap('map', 'resources/test.json', null, Phaser.Tilemap.TILED_JSON);
-        this.load.image('tiles', 'assets/pogre-sample-tileset.png');
-        //this.load.image('castle', '/tests/assets/CastleRed.png');
-        
-        this.load.spritesheet('castles', 'assets/castles.png', 64,64);
+
+        this.load.tilemap('map', 'resources/test5.json', null, Phaser.Tilemap.TILED_JSON);
+        this.load.image('tiles', 'assets/set_0.gif');
+
+        this.load.image('castle1', 'assets/castle.png');
+        this.load.image('castle2', 'assets/castle2.png');
         this.load.spritesheet('icons-units', 'assets/scaled-ogre-battle-unit-icons.png', 32, 32);
         this.load.spritesheet('arthur-victor', 'assets/arthur-victorious.png', 56, 124);
         this.load.spritesheet('arthur-flag', 'assets/arthur-flag.png', 119, 113);
@@ -44,7 +44,6 @@ OgrePrototype.Preloader.prototype = {
         this.load.spritesheet('btn-menu', 'assets/btn-menu-102x38.png', 102, 38);
         this.load.spritesheet('btn-castle', 'assets/btn-castle-102x38.png', 102, 38);
         this.load.spritesheet('btn-party', 'assets/btn-party-102x38.png', 102, 38);
-        //this.load.spritesheet('icons-00', '/rtf-assets/icon-set-40x40.png', 40, 40);
         this.load.spritesheet('icons-00', 'assets/icon-sheet.png', 40, 40);
         this.load.image('hand-cursor', 'assets/dwarven_gauntlet_extra_8.png', 28, 32);
         
